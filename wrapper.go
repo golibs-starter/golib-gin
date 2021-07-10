@@ -1,4 +1,4 @@
-package main
+package golibgin
 
 import (
 	"github.com/gin-gonic/gin"
