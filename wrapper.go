@@ -52,7 +52,7 @@ func Wrap(hh func(h http.Handler) http.Handler) gin.HandlerFunc {
 }
 
 // WrapAll allow to wrap multiple http.Handler, returns a slice of gin.HandlerFunc
-func WrapAll(hh ...func(h http.Handler) http.Handler) []gin.HandlerFunc {
+func WrapAll(hh []func(h http.Handler) http.Handler) []gin.HandlerFunc {
 	functions := make([]gin.HandlerFunc, 0)
 	for _, h := range hh {
 		functions = append(functions, Wrap(h))
