@@ -2,7 +2,7 @@ package golibgin
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.id.vin/vincart/golib/web/constants"
+	"gitlab.id.vin/vincart/golib/web/constant"
 	"net/http"
 )
 
@@ -33,7 +33,7 @@ type nextRequestHandler struct {
 
 // Run the next request in the middleware chain and return
 func (h *nextRequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.c.Set(constants.ContextReqAttribute, r.Context().Value(constants.ContextReqAttribute))
+	h.c.Set(constant.ContextReqAttribute, r.Context().Value(constant.ContextReqAttribute))
 	h.c.Request = h.c.Request.WithContext(r.Context())
 	h.c.Writer = &wrappedResponseWriter{h.c.Writer, w}
 	h.c.Next()
