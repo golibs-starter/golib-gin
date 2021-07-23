@@ -1,57 +1,56 @@
 package golibgin
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"gitlab.id.vin/vincart/golib/web/constant"
 	"net/http"
 )
 
-// A wrapper that turns a http.ResponseWriter into a gin.ResponseWriter, given an existing gin.ResponseWriter
-// Needed if the middleware you are using modifies the writer it passes downstream
-// Wrap more methods: https://golang.org/pkg/net/http/#ResponseWriter
-type wrappedResponseWriter struct {
-	gin.ResponseWriter
-	writer http.ResponseWriter
+type nextHandler struct{}
+
+// Pull Gin's context from the request context and call the next item
+// in the chain.
+func (h *nextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	state := r.Context().Value(h).(*middlewareCtx)
+	defer func(r *http.Request) { state.ctx.Request = r }(state.ctx.Request)
+	state.childCalled = true
+	state.ctx.Request = r
+	state.ctx.Writer = &wrappedResponseWriter{state.ctx.Writer, w}
+	state.ctx.Set(constant.ContextReqAttribute, r.Context().Value(constant.ContextReqAttribute))
+	state.ctx.Next()
 }
 
-func (w *wrappedResponseWriter) Writer() http.ResponseWriter {
-	return w.writer
+type middlewareCtx struct {
+	ctx         *gin.Context
+	childCalled bool
 }
 
-func (w *wrappedResponseWriter) WriteString(s string) (n int, err error) {
-	return w.writer.Write([]byte(s))
-}
-
-func (w *wrappedResponseWriter) WriteHeader(code int) {
-	w.writer.WriteHeader(code)
-}
-
-// An http.Handler that passes on calls to downstream middlewares
-type nextRequestHandler struct {
-	c *gin.Context
-}
-
-// Run the next request in the middleware chain and return
-func (h *nextRequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.c.Set(constant.ContextReqAttribute, r.Context().Value(constant.ContextReqAttribute))
-	h.c.Request = h.c.Request.WithContext(r.Context())
-	h.c.Writer = &wrappedResponseWriter{h.c.Writer, w}
-	h.c.Next()
-}
-
-// Wrap something that accepts an http.Handler, returns an gin.HandlerFunc
-func Wrap(hh func(h http.Handler) http.Handler) gin.HandlerFunc {
-	// Steps:
-	// - create an http handler to pass `hh`
-	// - call `hh` with the http handler, which returns a function
-	// - call the ServeHTTP method of the resulting function to run the rest of the middleware chain
-
-	return func(c *gin.Context) {
-		hh(&nextRequestHandler{c}).ServeHTTP(c.Writer, c.Request)
+func New() (http.Handler, func(h http.Handler) gin.HandlerFunc) {
+	next := new(nextHandler)
+	return next, func(h http.Handler) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			state := &middlewareCtx{ctx: c}
+			ctx := context.WithValue(c.Request.Context(), next, state)
+			h.ServeHTTP(c.Writer, c.Request.WithContext(ctx))
+			if !state.childCalled {
+				c.Abort()
+			}
+		}
 	}
 }
 
-// WrapAll allow to wrap multiple http.Handler, returns a slice of gin.HandlerFunc
+// Wrap takes the common HTTP middleware function signature, calls it to generate
+// a handler, and wraps it into a Gin middleware handler.
+//
+// This is just a convenience wrapper around New.
+func Wrap(f func(h http.Handler) http.Handler) gin.HandlerFunc {
+	next, adapter := New()
+	return adapter(f(next))
+}
+
+// WrapAll allow to wrap multiple http.Handler,
+// returns a slice of gin.HandlerFunc
 func WrapAll(hh []func(h http.Handler) http.Handler) []gin.HandlerFunc {
 	functions := make([]gin.HandlerFunc, 0)
 	for _, h := range hh {
