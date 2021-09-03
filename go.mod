@@ -4,5 +4,6 @@ go 1.14
 
 require (
 	github.com/gin-gonic/gin v1.7.2
-	gitlab.id.vin/vincart/golib v0.2.7
+	gitlab.id.vin/vincart/golib v0.3.0
+	go.uber.org/fx v1.13.1
 )
