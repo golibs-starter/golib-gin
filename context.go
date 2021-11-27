@@ -2,9 +2,9 @@ package golibgin
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.id.vin/vincart/golib"
-	"gitlab.id.vin/vincart/golib/web/constant"
-	"gitlab.id.vin/vincart/golib/web/context"
+	"gitlab.com/golibs-starter/golib"
+	"gitlab.com/golibs-starter/golib/web/constant"
+	"gitlab.com/golibs-starter/golib/web/context"
 	"go.uber.org/fx"
 )
 

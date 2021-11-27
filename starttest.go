@@ -3,8 +3,8 @@ package golibgin
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"gitlab.id.vin/vincart/golib"
-	"gitlab.id.vin/vincart/golib/log"
+	"gitlab.com/golibs-starter/golib"
+	"gitlab.com/golibs-starter/golib/log"
 	"go.uber.org/fx"
 	"net"
 	"net/http"
