@@ -4,6 +4,6 @@ go 1.14
 
 require (
 	github.com/gin-gonic/gin v1.7.2
-	gitlab.com/golibs-starter/golib v0.9.11-beta
+	gitlab.com/golibs-starter/golib v0.10.0-beta
 	go.uber.org/fx v1.13.1
 )
