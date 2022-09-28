@@ -30,7 +30,9 @@ func NewGinEngine(in GinEngineIn) *gin.Engine {
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	return gin.New()
+	engine := gin.New()
+	engine.Use(Recovery())
+	return engine
 }
 
 func NewHTTPServer(app *golib.App, engine *gin.Engine) *http.Server {
