@@ -20,22 +20,15 @@ Using `fx.Option` to include dependencies for injection.
 package main
 
 import (
-	"gitlab.com/golibs-starter/golib-gin"
-	"go.uber.org/fx"
+    "gitlab.com/golibs-starter/golib-gin"
+    "go.uber.org/fx"
 )
 
 func main() {
-	options := []fx.Option{
-		// When you want to attach Golib context to your Gin application
-		golibgin.RegisterContextOpt(),
-
-		// When you want to use default starting invoker
-		golibgin.StartOpt(),
-
-		// When you want to use default starting invoker in test
-		golibgin.StartTestOpt(func(err error) {
-			// Handle done state
-		}),
-	}
+    fx.New(
+        // Using Gin as handler for Http Server,
+        // Append startup method to Fx OnStart lifecycle.
+        golibgin.GinHttpServerOpt(),
+    ).Run()
 }
 ```
