@@ -15,8 +15,12 @@ func GinHttpServerOpt() fx.Option {
 		fx.Provide(NewGinEngine),
 		fx.Provide(NewHTTPServer),
 		fx.Invoke(RegisterHandlers),
-		fx.Invoke(AppendHttpServerStartup),
+		fx.Invoke(OnStartHttpServerHook),
 	)
+}
+
+func OnStopHttpServerOpt() fx.Option {
+	return fx.Invoke(OnStopHttpServerHook)
 }
 
 type GinEngineIn struct {
@@ -47,16 +51,29 @@ func RegisterHandlers(app *golib.App, engine *gin.Engine) {
 	engine.Use(WrapAll(app.Handlers())...)
 }
 
-func AppendHttpServerStartup(lc fx.Lifecycle, app *golib.App, httpServer *http.Server) {
+func OnStartHttpServerHook(lc fx.Lifecycle, app *golib.App, httpServer *http.Server) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			log.Infof("Application will be served at %s. Service name: %s, service path: %s",
 				httpServer.Addr, app.Name(), app.Path())
 			go func() {
-				if err := httpServer.ListenAndServe(); err != nil {
+				if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 					log.Errorf("Could not serve HTTP request at %s, error [%v]", httpServer.Addr, err)
 				}
+				log.Infof("Stopped HTTP Server %s", httpServer.Addr)
 			}()
+			return nil
+		},
+	})
+}
+
+func OnStopHttpServerHook(lc fx.Lifecycle, httpServer *http.Server) {
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			log.Infof("Stopping HTTP Server %s", httpServer.Addr)
+			if err := httpServer.Shutdown(ctx); err != nil {
+				log.Errorf("Could not stop HTTP server, error [%v]", err)
+			}
 			return nil
 		},
 	})
