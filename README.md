@@ -29,6 +29,9 @@ func main() {
         // Using Gin as handler for Http Server,
         // Append startup method to Fx OnStart lifecycle.
         golibgin.GinHttpServerOpt(),
+
+        // When you want to enable graceful shutdown.
+        golibgin.OnStopHttpServerOpt(),
     ).Run()
 }
 ```
