@@ -3,7 +3,7 @@ package golibgin
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/golibs-starter/golib/web/log"
+	"gitlab.com/golibs-starter/golib/log"
 	"net"
 	"net/http"
 	"os"
@@ -30,7 +30,7 @@ func CustomRecovery(handle gin.RecoveryFunc) gin.HandlerFunc {
 						}
 					}
 				}
-				log.Error(c.Request.Context(), "[Recovery] Panic recovered: %s", err)
+				log.WithCtx(c).Errorf("[Recovery] Panic recovered: %s", err)
 				if brokenPipe {
 					// If the connection is dead, we can't write a status to it.
 					_ = c.Error(err.(error))
