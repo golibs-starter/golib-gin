@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/golibs-starter/golib"
-	"gitlab.com/golibs-starter/golib/log"
+	"github.com/golibs-starter/golib"
+	"github.com/golibs-starter/golib/log"
 	"go.uber.org/fx"
 	"net/http"
 )

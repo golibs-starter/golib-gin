@@ -1,15 +1,19 @@
 # Golib GIN
 
-Gin Wrapper to adapt with [GoLib](https://gitlab.com/golibs-starter/golib)
+> **Note**
+> We are moving out from [Gitlab](https://gitlab.com/golibs-starter). All packages are now migrated
+> to `github.com/golibs-starter/*`. Please consider updating.
+
+Gin Wrapper to adapt with [GoLib](https://github.com/golibs-starter/golib)
 
 ### Setup instruction
 
-Base setup, see [GoLib Instruction](https://gitlab.com/golibs-starter/golib/-/blob/develop/README.md)
+Base setup, see [GoLib Instruction](https://github.com/golibs-starter/golib#readme)
 
 Both `go get` and `go mod` are supported.
 
 ```shell
-go get gitlab.com/golibs-starter/golib-gin
+go get github.com/golibs-starter/golib-gin
 ```
 
 ### Usage
@@ -20,7 +24,7 @@ Using `fx.Option` to include dependencies for injection.
 package main
 
 import (
-    "gitlab.com/golibs-starter/golib-gin"
+    "github.com/golibs-starter/golib-gin"
     "go.uber.org/fx"
 )
 
