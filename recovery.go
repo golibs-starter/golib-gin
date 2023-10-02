@@ -3,7 +3,7 @@ package golibgin
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/golibs-starter/golib/log"
+	"github.com/golibs-starter/golib/log"
 	"net"
 	"net/http"
 	"os"

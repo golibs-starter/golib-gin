@@ -2,8 +2,8 @@ package golibgin
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/golibs-starter/golib/web/constant"
-	"gitlab.com/golibs-starter/golib/web/context"
+	"github.com/golibs-starter/golib/web/constant"
+	"github.com/golibs-starter/golib/web/context"
 )
 
 func InitContext() gin.HandlerFunc {
